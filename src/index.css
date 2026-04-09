@@ -1,1 +1,26 @@
 @import "tailwindcss";
+
+@theme {
+  --color-clinic-primary: #DA70D6;
+  --color-clinic-secondary: #FFB6C1;
+  --color-clinic-accent: #FFB6C1;
+  --color-clinic-bg: #FFF5F7;
+  --color-clinic-card: #FFE4E9;
+  --color-clinic-header: #FFD1DC;
+}
+
+@layer utilities {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(218, 112, 214, 0.2);
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(218, 112, 214, 0.4);
+  }
+}

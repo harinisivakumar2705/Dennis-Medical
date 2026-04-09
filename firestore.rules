@@ -68,8 +68,10 @@ service cloud.firestore {
 
     function isAdmin() {
       return isAuthenticated() && 
-             (getUserData().role == 'admin' || 
-              (request.auth.token.email == "harinisivakumar2705@gmail.com" && request.auth.token.email_verified == true));
+             (
+               (request.auth.token.email == "harinisivakumar2705@gmail.com" && request.auth.token.email_verified == true) ||
+               (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && getUserData().role == 'admin')
+             );
     }
 
     // ===============================================================
@@ -103,7 +105,7 @@ service cloud.firestore {
       allow create: if hasPermission('canIntake');
       allow update: if hasPermission('canWritePatients') || 
                       (hasPermission('canReadPatients') && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'room']));
-      allow delete: if isAdmin();
+      allow delete: if isAuthenticated();
     }
 
     // Appointments Collection
