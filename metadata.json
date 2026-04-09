@@ -1,0 +1,5 @@
+{
+  "name": "OBGYN Outpatient EHR",
+  "description": "A HIPAA-compliant outpatient EHR platform for OBGYN offices, featuring RBAC, real-time floor status, patient intake, and audit logging.",
+  "requestFramePermissions": []
+}

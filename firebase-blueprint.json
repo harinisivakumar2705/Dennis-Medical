@@ -1,0 +1,127 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "System user with role-based access control.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "description": "Role name (references a Role entity)" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Role": {
+      "title": "Role",
+      "description": "Custom role definition with granular permissions.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "canReadPatients": { "type": "boolean" },
+        "canWritePatients": { "type": "boolean" },
+        "canIntake": { "type": "boolean" },
+        "canManageUsers": { "type": "boolean" },
+        "canSchedule": { "type": "boolean" },
+        "isSystem": { "type": "boolean", "description": "True if it's a built-in role" }
+      },
+      "required": ["name"]
+    },
+    "Appointment": {
+      "title": "Appointment",
+      "description": "Scheduled patient visit.",
+      "type": "object",
+      "properties": {
+        "patientId": { "type": "string" },
+        "patientName": { "type": "string" },
+        "startTime": { "type": "string", "format": "date-time" },
+        "type": { "type": "string" },
+        "status": { "type": "string", "enum": ["scheduled", "checked_in", "cancelled", "completed"] }
+      }
+    },
+    "Patient": {
+      "title": "Patient",
+      "description": "Medical record for a patient.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "firstName": { "type": "string" },
+        "lastName": { "type": "string" },
+        "dob": { "type": "string", "format": "date" },
+        "mrn": { "type": "string", "description": "Medical Record Number" },
+        "status": { "type": "string", "enum": ["waiting", "triage", "with_doctor", "discharged"] },
+        "room": { "type": "string" },
+        "lastUpdated": { "type": "string", "format": "date-time" }
+      },
+      "required": ["firstName", "lastName", "dob", "mrn"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "Immutable record of data access or modification.",
+      "type": "object",
+      "properties": {
+        "timestamp": { "type": "string", "format": "date-time" },
+        "userUid": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "action": { "type": "string", "enum": ["READ", "CREATE", "UPDATE", "DELETE", "LOGIN"] },
+        "resourceType": { "type": "string" },
+        "resourceId": { "type": "string" },
+        "details": { "type": "string" }
+      },
+      "required": ["timestamp", "userUid", "action", "resourceType"]
+    },
+    "Form": {
+      "title": "Form",
+      "description": "Medical form template or instance.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "type": { "type": "string" },
+        "content": { "type": "string", "description": "JSON stringified form data" }
+      }
+    },
+    "UserInvite": {
+      "title": "UserInvite",
+      "description": "Pre-assigned role for a user before they join.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string" },
+        "displayName": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "role"]
+    }
+  },
+  "firestore": {
+    "/user_invites/{email}": {
+      "schema": "UserInvite",
+      "description": "Pending user invitations"
+    },
+    "/roles/{roleId}": {
+      "schema": "Role",
+      "description": "Custom role definitions"
+    },
+    "/appointments/{appId}": {
+      "schema": "Appointment",
+      "description": "Scheduled appointments"
+    },
+    "/users/{uid}": {
+      "schema": "User",
+      "description": "User profiles and roles"
+    },
+    "/patients/{patientId}": {
+      "schema": "Patient",
+      "description": "Patient medical records"
+    },
+    "/audit_logs/{logId}": {
+      "schema": "AuditLog",
+      "description": "HIPAA audit trails"
+    },
+    "/forms/{formId}": {
+      "schema": "Form",
+      "description": "Medical forms and templates"
+    }
+  }
+}

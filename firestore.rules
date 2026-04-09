@@ -1,0 +1,133 @@
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: users
+// Document ID: {uid}
+// Fields:
+//   - uid: string (required) - Firebase Auth UID
+//   - email: string (required) - User email
+//   - role: string (required, enum: ['admin', 'doctor', 'nurse', 'cna']) - RBAC role
+//   - displayName: string (optional)
+//   - createdAt: timestamp (required)
+//
+// Collection: patients
+// Document ID: {patientId}
+// Fields:
+//   - firstName: string (required)
+//   - lastName: string (required)
+//   - dob: string (required, YYYY-MM-DD)
+//   - mrn: string (required) - Medical Record Number
+//   - status: string (required, enum: ['waiting', 'triage', 'with_doctor', 'discharged'])
+//   - room: string (optional)
+//   - lastUpdated: timestamp (required)
+//
+// Collection: audit_logs
+// Document ID: {logId}
+// Fields:
+//   - timestamp: timestamp (required)
+//   - userUid: string (required)
+//   - userEmail: string (required)
+//   - action: string (required, enum: ['READ', 'CREATE', 'UPDATE', 'DELETE', 'LOGIN'])
+//   - resourceType: string (required)
+//   - resourceId: string (required)
+//   - details: string (optional)
+//
+// Collection: forms
+// Document ID: {formId}
+// Fields:
+//   - title: string (required)
+//   - type: string (required)
+//   - content: string (required) - JSON stringified data
+//
+// ===============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function getRoleData(roleName) {
+      return get(/databases/$(database)/documents/roles/$(roleName)).data;
+    }
+
+    function hasPermission(permission) {
+      return isAuthenticated() && getRoleData(getUserData().role)[permission] == true;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+             (getUserData().role == 'admin' || 
+              (request.auth.token.email == "harinisivakumar2705@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    // ===============================================================
+    // Collection Rules
+    // ===============================================================
+
+    // Roles Collection - Only admins can manage roles
+    match /roles/{roleId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isAdmin() || (request.auth.uid == userId); // Allow self-creation for initial setup
+      allow update: if isAdmin() || (request.auth.uid == userId && request.resource.data.role == resource.data.role);
+      allow delete: if isAdmin();
+    }
+
+    // User Invites
+    match /user_invites/{email} {
+      allow read: if isAdmin() || (isAuthenticated() && request.auth.token.email == email);
+      allow create, update: if isAdmin();
+      allow delete: if isAdmin() || (isAuthenticated() && request.auth.token.email == email);
+    }
+
+    // Patients Collection
+    match /patients/{patientId} {
+      allow read: if hasPermission('canReadPatients');
+      allow create: if hasPermission('canIntake');
+      allow update: if hasPermission('canWritePatients') || 
+                      (hasPermission('canReadPatients') && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'room']));
+      allow delete: if isAdmin();
+    }
+
+    // Appointments Collection
+    match /appointments/{appId} {
+      allow read: if hasPermission('canReadPatients') || hasPermission('canSchedule');
+      allow write: if hasPermission('canSchedule');
+    }
+
+    // Audit Logs - Append only
+    match /audit_logs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isAuthenticated() && request.resource.data.userUid == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // Forms
+    match /forms/{formId} {
+      allow read: if hasPermission('canReadPatients');
+      allow write: if hasPermission('canWritePatients');
+    }
+
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
