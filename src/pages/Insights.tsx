@@ -8,7 +8,7 @@ export function Insights() {
       </div>
       <h1 className="text-2xl font-bold text-slate-900 mb-2">Clinic Insights</h1>
       <p className="text-slate-500 max-w-md">
-        This page will display clinic performance metrics, wait times, and appointment trends. It will provide interactive analytical dashboards once deep integration with BI platforms is complete.
+        This page will display clinic performance metrics, wait times, and appointment trends. It will provide interactive analytical dashboards for business insights.
       </p>
     </div>
   );
