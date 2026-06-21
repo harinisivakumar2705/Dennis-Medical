@@ -31,19 +31,6 @@ export function SettingsPage() {
             </div>
           </div>
         </section>
-
-        <section className="pt-8 border-t border-slate-100 space-y-4">
-          <h2 className="text-lg font-bold text-slate-900">System Preferences</h2>
-          <div className="flex items-center justify-between p-4 bg-clinic-bg rounded-xl">
-            <div>
-              <p className="font-medium text-slate-900">Dark Mode</p>
-              <p className="text-sm text-slate-500">Adjust the interface for low light</p>
-            </div>
-            <div className="w-12 h-6 bg-clinic-secondary/20 rounded-full relative">
-              <div className="absolute left-1 top-1 w-4 h-4 bg-clinic-card rounded-full" />
-            </div>
-          </div>
-        </section>
       </div>
     </div>
   );

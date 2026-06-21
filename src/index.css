@@ -24,3 +24,29 @@
     background: rgba(245, 164, 224, 0.4);
   }
 }
+
+/* Force all text elements, headers, inputs, buttons, list items, and basic elements to render as pure black text */
+body, 
+p, 
+span, 
+h1, 
+h2, 
+h3, 
+h4, 
+h5, 
+h6, 
+a, 
+li, 
+button, 
+input, 
+select, 
+textarea, 
+label, 
+td, 
+th, 
+strong, 
+b, 
+em, 
+i {
+  color: #000000 !important;
+}

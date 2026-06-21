@@ -170,7 +170,6 @@ export function Appointments() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Schedule</h1>
-          <p className="text-slate-500">Manage clinic appointments and patient flow</p>
         </div>
         
         <div className="flex flex-wrap items-center gap-4">

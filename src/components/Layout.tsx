@@ -37,7 +37,7 @@ import { Forms } from '../pages/Forms';
 import { PharmacyIntegration } from '../pages/PharmacyIntegration';
 import { LabIntegration } from '../pages/LabIntegration';
 import { StaffMessaging } from '../pages/StaffMessaging';
-import { Admin } from '../pages/Admin';
+// import { Admin } from '../pages/Admin';
 import { SettingsPage } from '../pages/SettingsPage';
 
 export function Layout() {
@@ -58,20 +58,17 @@ export function Layout() {
     { 
       path: '/pharmacy', 
       icon: Pill, 
-      label: 'Pharmacy Integration',
-      restricted: true
+      label: 'Pharmacy Integration'
     },
     { 
       path: '/labs', 
       icon: FlaskConical, 
-      label: 'Lab Integration',
-      restricted: true
+      label: 'Lab Integration'
     },
     { 
       path: '/messaging', 
       icon: MessageSquare, 
-      label: 'Staff Messaging',
-      restricted: true
+      label: 'Staff Messaging'
     },
   ];
 
@@ -101,7 +98,6 @@ export function Layout() {
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto overflow-x-hidden">
           {navItems.map((item) => {
             if (item.permission && roleData && !roleData[item.permission as keyof RoleDefinition]) return null;
-            if (item.restricted && !canSeeRestricted) return null;
             const isActive = location.pathname === item.path;
             return (
               <Link
@@ -176,7 +172,8 @@ export function Layout() {
                     <Settings className="w-4 h-4" />
                     User Settings
                   </button>
-                  {roleData?.canManageUsers && (
+                  {/* Temporarily disabled Admin navigation item
+                  roleData?.canManageUsers && (
                     <button 
                       onClick={() => { navigate('/admin'); setShowUserMenu(false); }}
                       className="w-full flex items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-clinic-secondary/20"
@@ -184,7 +181,7 @@ export function Layout() {
                       <ShieldCheck className="w-4 h-4" />
                       Admin
                     </button>
-                  )}
+                  )*/}
                   <hr className="my-2 border-slate-100" />
                   <button 
                     onClick={() => { logout(); setShowUserMenu(false); }}
@@ -220,7 +217,9 @@ export function Layout() {
                 <Route path="/pharmacy" element={<PharmacyIntegration />} />
                 <Route path="/labs" element={<LabIntegration />} />
                 <Route path="/messaging" element={<StaffMessaging />} />
+                {/* Temporarily disabled Admin route
                 <Route path="/admin" element={<ProtectedRoute permission="canManageUsers"><Admin /></ProtectedRoute>} />
+                */}
                 <Route path="/settings" element={<SettingsPage />} />
               </Routes>
             </motion.div>

@@ -33,7 +33,6 @@ export function WaitingRoom() {
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-slate-900">Waiting Room</h1>
-          <p className="text-slate-500">Manage patients currently in the clinic</p>
         </div>
         <FilterDropdown 
           value={statusFilter} 
