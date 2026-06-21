@@ -8,25 +8,10 @@
         "uid": { "type": "string", "description": "Firebase Auth UID" },
         "email": { "type": "string", "format": "email" },
         "displayName": { "type": "string" },
-        "role": { "type": "string", "description": "Role name (references a Role entity)" },
+        "role": { "type": "string", "description": "Role name (references in-memory ROLE_MAP: 'admin', 'clinician', 'staff')" },
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["uid", "email", "role"]
-    },
-    "Role": {
-      "title": "Role",
-      "description": "Custom role definition with granular permissions.",
-      "type": "object",
-      "properties": {
-        "name": { "type": "string" },
-        "canReadPatients": { "type": "boolean" },
-        "canWritePatients": { "type": "boolean" },
-        "canIntake": { "type": "boolean" },
-        "canManageUsers": { "type": "boolean" },
-        "canSchedule": { "type": "boolean" },
-        "isSystem": { "type": "boolean", "description": "True if it's a built-in role" }
-      },
-      "required": ["name"]
     },
     "Appointment": {
       "title": "Appointment",
@@ -80,29 +65,9 @@
         "type": { "type": "string" },
         "content": { "type": "string", "description": "JSON stringified form data" }
       }
-    },
-    "UserInvite": {
-      "title": "UserInvite",
-      "description": "Pre-assigned role for a user before they join.",
-      "type": "object",
-      "properties": {
-        "email": { "type": "string", "format": "email" },
-        "role": { "type": "string" },
-        "displayName": { "type": "string" },
-        "createdAt": { "type": "string", "format": "date-time" }
-      },
-      "required": ["email", "role"]
     }
   },
   "firestore": {
-    "/user_invites/{email}": {
-      "schema": "UserInvite",
-      "description": "Pending user invitations"
-    },
-    "/roles/{roleId}": {
-      "schema": "Role",
-      "description": "Custom role definitions"
-    },
     "/appointments/{appId}": {
       "schema": "Appointment",
       "description": "Scheduled appointments"

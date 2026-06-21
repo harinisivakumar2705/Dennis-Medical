@@ -58,31 +58,29 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
     }
 
-    function getRoleData(roleName) {
-      return get(/databases/$(database)/documents/roles/$(roleName)).data;
-    }
-
-    function hasPermission(permission) {
-      return isAuthenticated() && getRoleData(getUserData().role)[permission] == true;
+    function getUserRole() {
+      return getUserData().role;
     }
 
     function isAdmin() {
       return isAuthenticated() && 
              (
                (request.auth.token.email == "harinisivakumar2705@gmail.com" && request.auth.token.email_verified == true) ||
-               (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && getUserData().role == 'admin')
+               (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && getUserRole() == 'admin')
              );
+    }
+
+    function isClinician() {
+      return isAuthenticated() && (getUserRole() == 'clinician' || isAdmin());
+    }
+
+    function isStaff() {
+      return isAuthenticated() && (getUserRole() == 'staff' || isClinician());
     }
 
     // ===============================================================
     // Collection Rules
     // ===============================================================
-
-    // Roles Collection - Only admins can manage roles
-    match /roles/{roleId} {
-      allow read: if isAuthenticated();
-      allow write: if isAdmin();
-    }
 
     // Users Collection
     match /users/{userId} {
@@ -92,26 +90,19 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // User Invites
-    match /user_invites/{email} {
-      allow read: if isAdmin() || (isAuthenticated() && request.auth.token.email == email);
-      allow create, update: if isAdmin();
-      allow delete: if isAdmin() || (isAuthenticated() && request.auth.token.email == email);
-    }
-
     // Patients Collection
     match /patients/{patientId} {
-      allow read: if hasPermission('canReadPatients');
-      allow create: if hasPermission('canIntake');
-      allow update: if hasPermission('canWritePatients') || 
-                      (hasPermission('canReadPatients') && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'room']));
-      allow delete: if isAuthenticated();
+      allow read: if isStaff();
+      allow create: if isStaff();
+      allow update: if isClinician() || 
+                      (isStaff() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'room']));
+      allow delete: if isClinician();
     }
 
     // Appointments Collection
     match /appointments/{appId} {
-      allow read: if hasPermission('canReadPatients') || hasPermission('canSchedule');
-      allow write: if hasPermission('canSchedule');
+      allow read: if isStaff();
+      allow write: if isStaff();
     }
 
     // Audit Logs - Append only
@@ -123,8 +114,8 @@ service cloud.firestore {
 
     // Forms
     match /forms/{formId} {
-      allow read: if hasPermission('canReadPatients');
-      allow write: if hasPermission('canWritePatients');
+      allow read: if isStaff();
+      allow write: if isClinician();
     }
 
     // Default Deny

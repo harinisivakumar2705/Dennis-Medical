@@ -1,5 +1,6 @@
 {
   "name": "Dennis Medical",
   "description": "A HIPAA-compliant outpatient EHR platform for Dennis Medical OBGYN office, featuring RBAC, real-time floor status, patient intake, and audit logging.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

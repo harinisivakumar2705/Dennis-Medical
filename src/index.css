@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 @theme {
-  --color-clinic-primary: #DA70D6;
-  --color-clinic-secondary: #FFB6C1;
-  --color-clinic-accent: #FFB6C1;
-  --color-clinic-bg: #FFF5F7;
-  --color-clinic-card: #FFE4E9;
-  --color-clinic-header: #FFD1DC;
+  --color-clinic-primary: #F5A4E0;
+  --color-clinic-secondary: #FFFFFF;
+  --color-clinic-accent: #FFFFFF;
+  --color-clinic-bg: #FFF0FA;
+  --color-clinic-card: #FFE5F7;
+  --color-clinic-header: #FFD3F2;
 }
 
 @layer utilities {
@@ -17,10 +17,10 @@
     background: transparent;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(218, 112, 214, 0.2);
+    background: rgba(245, 164, 224, 0.2);
     border-radius: 10px;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(218, 112, 214, 0.4);
+    background: rgba(245, 164, 224, 0.4);
   }
 }
