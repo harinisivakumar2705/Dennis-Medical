@@ -67,6 +67,7 @@ export function Patients() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
         <div>
           <h1 className="text-3xl font-bold text-slate-900">Patient lookup</h1>
+          <p className="text-slate-500">Search and manage patient medical records</p>
         </div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full md:w-auto">
           <FilterDropdown 

@@ -25,7 +25,7 @@ export function Dashboard() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const navigate = useNavigate();
-  const { roleData, profile } = useAuth();
+  const { roleData } = useAuth();
 
   useEffect(() => {
     const q = query(collection(db, 'patients'), orderBy('lastUpdated', 'desc'));
@@ -49,9 +49,8 @@ export function Dashboard() {
     <div className="space-y-10">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-bold text-slate-900 tracking-tight lowercase">
-            welcome back, {profile?.displayName || 'staff member'}
-          </h1>
+          <h1 className="text-4xl font-bold text-slate-900 tracking-tight">Main page</h1>
+          <p className="text-slate-500 text-lg mt-1">Welcome back to the Dennis Medical staff portal.</p>
         </div>
         
         <div className="flex items-center gap-3">
