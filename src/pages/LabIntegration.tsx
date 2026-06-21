@@ -11,8 +11,8 @@ export function LabIntegration() {
         <div className="w-16 h-16 bg-clinic-bg text-slate-400 rounded-full flex items-center justify-center mb-4">
           <FlaskConical className="w-8 h-8" />
         </div>
-        <h2 className="text-xl font-bold text-slate-900 mb-2">Laboratory Module</h2>
-        <p className="text-slate-500 max-w-md">Real-time lab result tracking and diagnostic ordering will be available here once the LIS integration is complete.</p>
+        <h2 className="text-xl font-bold text-slate-900 mb-2">Lab integration</h2>
+        <p className="text-slate-500 max-w-md">This page will integrate to a 3rd party vendor lab application to receive lab results in real time. Will expand into FHIR and ISO compliant design.</p>
       </div>
     </div>
   );

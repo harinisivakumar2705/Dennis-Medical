@@ -6,24 +6,17 @@ import {
   signOut,
   User as FirebaseUser
 } from 'firebase/auth';
-import { 
-  doc, 
-  getDoc, 
-  setDoc, 
-  getDocFromServer,
-  Timestamp 
-} from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { ROLE_MAP, RoleDefinition, UserProfile } from '../types';
-import { logAction } from '../services/audit';
 
 interface AuthContextType {
   user: FirebaseUser | null;
   profile: UserProfile | null;
   roleData: RoleDefinition | null;
   loading: boolean;
-  signingIn: boolean;
-  signIn: () => Promise<void>;
+  isSigningIn: boolean;
+  login: () => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -35,78 +28,53 @@ export function useAuth() {
   return context;
 }
 
-async function testConnection() {
-  try {
-    await getDocFromServer(doc(db, '_internal_', 'connection_test'));
-  } catch (error) {
-    if (error instanceof Error && error.message.includes('the client is offline')) {
-      console.error("CRITICAL: Firestore is offline. Please check your Firebase configuration and internet connection.");
-    }
-  }
-}
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [roleData, setRoleData] = useState<RoleDefinition | null>(null);
   const [loading, setLoading] = useState(true);
-  const [signingIn, setSigningIn] = useState(false);
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
   useEffect(() => {
-    testConnection();
-    const unsubscribe = onAuthStateChanged(auth, async (u) => {
-      setUser(u);
-      if (u) {
-        const docRef = doc(db, 'users', u.uid);
-        let docSnap;
+    // Listen for Firebase auth state changes
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      setUser(firebaseUser);
+      
+      if (firebaseUser) {
         try {
-          docSnap = await getDoc(docRef);
-        } catch (err) {
-          console.error('Failed to fetch user profile:', err);
-        }
-        
-        let currentProfile: UserProfile | null = null;
-        if (docSnap?.exists()) {
-          currentProfile = docSnap.data() as UserProfile;
-        } else {
-          try {
-            const isFirstAdmin = u.email === 'harinisivakumar2705@gmail.com';
-            let assignedRole = isFirstAdmin ? 'admin' : 'staff';
-            let assignedName = u.displayName || '';
-
-            currentProfile = {
-              uid: u.uid,
-              email: u.email || '',
-              displayName: assignedName,
-              role: assignedRole,
-              createdAt: Timestamp.now()
-            };
-            await setDoc(docRef, currentProfile);
-            await logAction('CREATE', 'users', u.uid, `Auto-created user profile with role: ${assignedRole}`);
-          } catch (err) {
-            console.error('Failed to create user profile:', err);
+          // Fetch user profile from Firestore
+          const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+          
+          if (userDoc.exists()) {
+            const userProfile = userDoc.data() as UserProfile;
+            setProfile(userProfile);
+            setRoleData(ROLE_MAP[userProfile.role] || ROLE_MAP.staff);
+          } else {
+            // User profile not found, fall back to default staff permissions
+            // Note: Auto-creation is handled elsewhere or skipped for simplicity during EOI
+            setProfile(null);
+            setRoleData(ROLE_MAP.staff);
           }
+        } catch (error) {
+          console.error('Failed to load user profile:', error);
+          setProfile(null);
+          setRoleData(ROLE_MAP.staff);
         }
-        setProfile(currentProfile);
-
-        if (currentProfile) {
-          const matchedRole = ROLE_MAP[currentProfile.role] || ROLE_MAP.staff;
-          setRoleData(matchedRole);
-        }
-
-        await logAction('LOGIN', 'auth', u.uid);
       } else {
+        // Clear state on logout
         setProfile(null);
         setRoleData(null);
       }
+      
       setLoading(false);
     });
+
     return () => unsubscribe();
   }, []);
 
-  const signIn = async () => {
-    if (signingIn) return;
-    setSigningIn(true);
+  const login = async () => {
+    if (isSigningIn) return;
+    setIsSigningIn(true);
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
@@ -117,7 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.error('Sign-in error:', error);
       }
     } finally {
-      setSigningIn(false);
+      setIsSigningIn(false);
     }
   };
 
@@ -126,7 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, roleData, loading, signingIn, signIn, logout }}>
+    <AuthContext.Provider value={{ user, profile, roleData, loading, isSigningIn, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

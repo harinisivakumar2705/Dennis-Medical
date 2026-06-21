@@ -11,8 +11,8 @@ export function StaffMessaging() {
         <div className="w-16 h-16 bg-clinic-bg text-slate-400 rounded-full flex items-center justify-center mb-4">
           <MessageSquare className="w-8 h-8" />
         </div>
-        <h2 className="text-xl font-bold text-slate-900 mb-2">Messaging Module</h2>
-        <p className="text-slate-500 max-w-md">Secure internal messaging for clinic staff is currently being configured. This will allow for HIPAA-compliant communication.</p>
+        <h2 className="text-xl font-bold text-slate-900 mb-2">Messaging page</h2>
+        <p className="text-slate-500 max-w-md">This page will allow staff to communicate with each other. Since this could involve sensitive patient info, will have to keep data regulatory standards in mind like hipaa.</p>
       </div>
     </div>
   );

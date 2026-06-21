@@ -39,6 +39,15 @@ export const ROLE_MAP: Record<string, RoleDefinition> = {
     canSchedule: true,
     isSystem: true
   },
+  doctor: {
+    name: 'doctor',
+    canReadPatients: true,
+    canWritePatients: true,
+    canIntake: true,
+    canManageUsers: false,
+    canSchedule: true,
+    isSystem: true
+  },
   staff: {
     name: 'staff',
     canReadPatients: true,

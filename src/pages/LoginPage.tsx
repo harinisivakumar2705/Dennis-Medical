@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { cn } from '../lib/utils';
 
 export function LoginPage() {
-  const { signIn, user, loading, signingIn } = useAuth();
+  const { login, user, loading, isSigningIn } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,19 +26,19 @@ export function LoginPage() {
         </div>
 
         <button
-          onClick={signIn}
-          disabled={signingIn}
+          onClick={login}
+          disabled={isSigningIn}
           className={cn(
             "w-full flex items-center justify-center gap-3 bg-clinic-header border border-slate-300 text-slate-700 font-medium py-3 px-4 rounded-xl transition-all shadow-sm",
-            signingIn ? "opacity-50 cursor-not-allowed" : "hover:bg-clinic-secondary/20"
+            isSigningIn ? "opacity-50 cursor-not-allowed" : "hover:bg-clinic-secondary/20"
           )}
         >
-          {signingIn ? (
+          {isSigningIn ? (
             <div className="w-5 h-5 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />
           ) : (
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" className="w-5 h-5" alt="Google" />
           )}
-          {signingIn ? 'Signing in...' : 'Sign in with Google'}
+          {isSigningIn ? 'Signing in...' : 'Sign in with Google'}
         </button>
 
         <div className="mt-8 p-4 bg-amber-50 rounded-lg border border-amber-100 flex gap-3">
